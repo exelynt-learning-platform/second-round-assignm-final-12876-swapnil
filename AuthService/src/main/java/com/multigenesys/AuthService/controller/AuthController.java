@@ -69,25 +69,4 @@ public class AuthController {
 		}
 	}
 
-//	@PostMapping("/login")
-//	public ResponseEntity<ApiResponse<AuthResponse>> login(@RequestBody LoginRequest request) {
-//
-//	    try {
-//	        AuthResponse token = authService.login(request);
-//
-//	        return ResponseEntity.ok(
-//	                new ApiResponse<>("Login successful", "SUCCESS", token)
-//	        );
-//
-//	    } catch (RuntimeException ex) {
-//
-//	        return ResponseEntity.status(HttpStatus.UNAUTHORIZED)
-//	                .body(new ApiResponse<>(ex.getMessage(), "ERROR", null));
-//
-//	    } catch (Exception ex) {
-//
-//	        return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
-//	                .body(new ApiResponse<>("Something went wrong", "ERROR", null));
-//	    }
-//	}
 }
