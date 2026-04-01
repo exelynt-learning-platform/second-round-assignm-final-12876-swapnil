@@ -82,16 +82,4 @@ public class AuthService {
 	    return new AuthResponse(token);
 	}
 	
-//	public AuthResponse login(LoginRequest request, String ipAddress, String userAgent) {
-//
-//        User user = userRepository.findByEmail(request.getEmail())
-//                .orElseThrow(() -> new RuntimeException("User not found"));
-//
-//        if (!passwordEncoder.matches(request.getPassword(), user.getPassword())) {
-//            throw new RuntimeException("Invalid credentials");
-//        }
-//
-//        String token = jwtUtil.generateToken(user.getEmail(),user.getId());
-//        return new AuthResponse(token);
-//    }
 }
