@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 # MultiGenesys E-Commerce Backend System
 
 ## Overview
@@ -58,3 +59,7 @@ http://localhost:9096
 Postman collection is provided in the repository.
 
 
+=======
+# second-round-assignm-final-12876-swapnil
+Final Project Assignment - This repository contains the complete final project code and documentation.
+>>>>>>> b67794f5a8021f74066de67b0916c7b621bd99ce
