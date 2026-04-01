@@ -1,0 +1,116 @@
+package com.multigenesys.ecommerce_service.service;
+
+import java.util.ArrayList;
+import java.util.List;
+
+import org.springframework.stereotype.Service;
+
+import com.multigenesys.ecommerce_service.dto.OrderResponse;
+import com.multigenesys.ecommerce_service.entity.Cart;
+import com.multigenesys.ecommerce_service.entity.CartItem;
+import com.multigenesys.ecommerce_service.entity.Order;
+import com.multigenesys.ecommerce_service.entity.OrderItem;
+import com.multigenesys.ecommerce_service.repository.CartRepository;
+import com.multigenesys.ecommerce_service.repository.OrderRepository;
+
+@Service
+public class OrderServiceImpl implements OrderService {
+
+	private final CartRepository cartRepository;
+	private final OrderRepository orderRepository;
+
+	public OrderServiceImpl(CartRepository cartRepository, OrderRepository orderRepository) {
+		this.cartRepository = cartRepository;
+		this.orderRepository = orderRepository;
+	}
+
+	@Override
+	public OrderResponse createOrder(Long userId) {
+
+		Cart cart = cartRepository.findByUserId(userId).orElseThrow(() -> new RuntimeException("Cart not found"));
+
+		Order order = new Order();
+		order.setUserId(userId);
+
+		List<OrderItem> orderItems = new ArrayList();
+
+		double total = 0;
+
+		for (CartItem cartItem : cart.getItems()) {
+
+			OrderItem orderItem = new OrderItem();
+
+			orderItem.setProductId(cartItem.getProductId());
+			orderItem.setQuantity(cartItem.getQuantity());
+			orderItem.setPrice(100.0); // dummy price
+			orderItem.setOrder(order);
+
+			total = total + (cartItem.getQuantity() * 100);
+
+			orderItems.add(orderItem);
+		}
+
+		order.setItems(orderItems);
+		order.setTotalPrice(total);
+		order.setPaymentStatus("PENDING");
+
+		Order savedOrder = orderRepository.save(order);
+
+		OrderResponse response = new OrderResponse();
+		response.setOrderId(savedOrder.getId());
+		response.setUserId(savedOrder.getUserId());
+		response.setTotalPrice(savedOrder.getTotalPrice());
+		response.setPaymentStatus(savedOrder.getPaymentStatus());
+//        response.setItems(savedOrder.getItems());
+
+		List<OrderItem> itemList = new ArrayList<>();
+
+		for (OrderItem item : savedOrder.getItems()) {
+
+			OrderItem newItem = new OrderItem();
+
+			newItem.setId(item.getId());
+			newItem.setProductId(item.getProductId());
+			newItem.setQuantity(item.getQuantity());
+			newItem.setPrice(item.getPrice());
+
+			itemList.add(newItem);
+		}
+
+		response.setItems(itemList);
+
+		return response;
+	}
+
+	@Override
+	public OrderResponse getOrderById(Long orderId) {
+
+		Order order = orderRepository.findById(orderId).orElseThrow(() -> new RuntimeException("Order not found"));
+
+		OrderResponse response = new OrderResponse();
+
+		response.setOrderId(order.getId());
+		response.setUserId(order.getUserId());
+		response.setTotalPrice(order.getTotalPrice());
+		response.setPaymentStatus(order.getPaymentStatus());
+//		response.setItems(order.getItems());
+		
+		List<OrderItem> itemList = new ArrayList<>();
+
+		for (OrderItem item : order.getItems()) {
+
+		    OrderItem newItem = new OrderItem();
+
+		    newItem.setId(item.getId());
+		    newItem.setProductId(item.getProductId());
+		    newItem.setQuantity(item.getQuantity());
+		    newItem.setPrice(item.getPrice());
+
+		    itemList.add(newItem);
+		}
+
+		response.setItems(itemList);
+
+		return response;
+	}
+}

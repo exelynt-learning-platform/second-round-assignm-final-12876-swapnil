@@ -1,0 +1,6 @@
+package com.multigenesys.ecommerce_service.dto;
+
+public class ProductResponse {
+
+	
+}

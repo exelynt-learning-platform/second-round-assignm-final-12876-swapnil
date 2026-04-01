@@ -1,0 +1,58 @@
+package com.multigenesys.AuthService.service;
+
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.crypto.password.PasswordEncoder;
+import org.springframework.stereotype.Service;
+
+import com.multigenesys.AuthService.dto.AuthResponse;
+import com.multigenesys.AuthService.dto.LoginRequest;
+import com.multigenesys.AuthService.dto.RegisterRequest;
+import com.multigenesys.AuthService.entity.Role;
+import com.multigenesys.AuthService.entity.User;
+import com.multigenesys.AuthService.repository.UserRepository;
+import com.multigenesys.AuthService.util.JwtUtil;
+
+@Service
+public class AuthService {
+
+	@Autowired
+    private  UserRepository userRepository;
+	
+    private  PasswordEncoder passwordEncoder;
+	
+	@Autowired
+    private  JwtUtil jwtUtil;
+	
+
+
+    public AuthResponse register(RegisterRequest request) {
+    	
+    	System.out.println(1);
+
+    	User user = new User();
+
+        user.setName(request.getName());
+        user.setEmail(request.getEmail());
+        user.setPassword(passwordEncoder.encode(request.getPassword()));
+        System.out.println(2);
+        user.setRole(Role.USER);
+
+        userRepository.save(user);
+
+        String token = jwtUtil.generateToken(user.getEmail());
+        return new AuthResponse(token);
+    }
+
+    public AuthResponse login(LoginRequest request) {
+
+        User user = userRepository.findByEmail(request.getEmail())
+                .orElseThrow(() -> new RuntimeException("User not found"));
+
+        if (!passwordEncoder.matches(request.getPassword(), user.getPassword())) {
+            throw new RuntimeException("Invalid credentials");
+        }
+
+        String token = jwtUtil.generateToken(user.getEmail());
+        return new AuthResponse(token);
+    }
+}

@@ -1,0 +1,5 @@
+package com.multigenesys.AuthService.repository;
+
+public interface UserLoginHistoryRepository {
+
+}

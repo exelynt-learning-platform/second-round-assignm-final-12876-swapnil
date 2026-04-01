@@ -1,0 +1,5 @@
+package com.multigenesys.AuthService.dto;
+
+public class AuthResponse {
+
+}

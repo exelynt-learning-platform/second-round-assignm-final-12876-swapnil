@@ -1,0 +1,5 @@
+package com.multigenesys.AuthService.util;
+
+public class JwtUtil {
+
+}

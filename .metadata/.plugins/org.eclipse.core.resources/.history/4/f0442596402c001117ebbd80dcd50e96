@@ -1,0 +1,5 @@
+package com.multigenesys.ecommerce_service.util;
+
+public class JwtFilter {
+
+}

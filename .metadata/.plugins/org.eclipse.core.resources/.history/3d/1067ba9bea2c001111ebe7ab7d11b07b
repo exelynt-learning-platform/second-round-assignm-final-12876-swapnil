@@ -1,0 +1,56 @@
+package com.multigenesys.ecommerce_service.controller;
+
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.DeleteMapping;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.PutMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.RestController;
+
+import com.multigenesys.ecommerce_service.dto.CartRequest;
+import com.multigenesys.ecommerce_service.service.CartService;
+
+@RestController
+@RequestMapping("/api/cart")
+public class CartController {
+
+	@Autowired
+    private CartService cartService;
+
+
+    // 👉 userId manually pass (later JWT extract करू)
+    @PostMapping("/addCart")
+    public ResponseEntity<?> add(@RequestParam Long userId,
+                                @RequestBody CartRequest request){
+
+        return ResponseEntity.ok(cartService.addToCart(userId, request));
+    }
+
+    @PutMapping("/updateCart/{itemId}")
+    public ResponseEntity<?> update(@RequestParam Long userId,
+                                   @PathVariable Long itemId,
+                                   @RequestParam Integer quantity){
+
+        return ResponseEntity.ok(
+                cartService.updateCartItem(userId, itemId, quantity)
+        );
+    }
+
+    @DeleteMapping("/removeCart/{itemId}")
+    public ResponseEntity<?> remove(@RequestParam Long userId,
+                                   @PathVariable Long itemId){
+
+        cartService.removeCartItem(userId, itemId);
+        return ResponseEntity.ok("Item removed");
+    }
+
+    @GetMapping("/getCart")
+    public ResponseEntity<?> getCart(@RequestParam Long userId){
+        return ResponseEntity.ok(cartService.getCart(userId));
+    }
+}

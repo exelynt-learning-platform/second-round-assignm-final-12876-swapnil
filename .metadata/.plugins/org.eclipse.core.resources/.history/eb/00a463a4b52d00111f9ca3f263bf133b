@@ -1,0 +1,27 @@
+package com.multigenesys.multigenesys_ecommerce_service.service;
+
+@ExtendWith(MockitoExtension.class)
+class ProductServiceTest {
+
+    @Mock
+    private ProductRepository productRepository;
+
+    @InjectMocks
+    private ProductServiceImpl productService;
+
+    @Test
+    void testGetProductById() {
+
+        Product product = new Product();
+        product.setId(1L);
+        product.setName("Laptop");
+
+        when(productRepository.findById(1L))
+                .thenReturn(Optional.of(product));
+
+        Product result = productService.getProductById(1L);
+
+        assertNotNull(result);
+        assertEquals("Laptop", result.getName());
+    }
+}
