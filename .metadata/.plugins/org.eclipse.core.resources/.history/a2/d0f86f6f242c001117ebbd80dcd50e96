@@ -1,5 +1,0 @@
-package com.multigenesys.ecommerce_service.service;
-
-public interface ProductService {
-
-}
