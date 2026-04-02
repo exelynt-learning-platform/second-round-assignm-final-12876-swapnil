@@ -1,0 +1,99 @@
+package com.multigenesys.auth_service.entity;
+
+import jakarta.persistence.*;
+import java.time.LocalDateTime;
+
+@Entity
+@Table(name = "USER_LOGIN_HISTORY")
+public class UserLoginHistory {
+
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Column(name = "ID")
+    private Long id;
+
+    @Column(name = "USER_ID")
+    private Long userId;
+
+    @Column(name = "EMAIL")
+    private String email;
+
+    @Column(name = "LOGIN_TIME")
+    private LocalDateTime loginTime;
+
+    @Column(name = "IP_ADDRESS")
+    private String ipAddress;
+
+    @Column(name = "DEVICE_TYPE")
+    private String deviceType;
+
+    @Column(name = "STATUS")
+    private String status;
+
+    public UserLoginHistory() {}
+
+    @PrePersist
+    public void onCreate() {
+        this.loginTime = LocalDateTime.now();
+    }
+
+    public Long getId() {
+        return id;
+    }
+
+    public Long getUserId() {
+        return userId;
+    }
+
+    public void setUserId(Long userId) {
+        this.userId = userId;
+    }
+
+    public void setId(Long id) {
+        this.id = id;
+    }
+
+    public String getEmail() {
+        return email;
+    }
+
+    public void setEmail(String email) {
+        this.email = email;
+    }
+
+    public LocalDateTime getLoginTime() {
+        return loginTime;
+    }
+
+    public String getIpAddress() {
+        return ipAddress;
+    }
+
+    public void setIpAddress(String ipAddress) {
+        this.ipAddress = ipAddress;
+    }
+
+    public String getDeviceType() {
+        return deviceType;
+    }
+
+    public void setDeviceType(String deviceType) {
+        this.deviceType = deviceType;
+    }
+
+    public String getStatus() {
+        return status;
+    }
+
+    public void setStatus(String status) {
+        this.status = status;
+    }
+
+	@Override
+	public String toString() {
+		return "UserLoginHistory [id=" + id + ", userId=" + userId + ", email=" + email + ", loginTime=" + loginTime
+				+ ", ipAddress=" + ipAddress + ", deviceType=" + deviceType + ", status=" + status + "]";
+	}
+    
+    
+}

@@ -1,0 +1,211 @@
+{
+  "info": {
+    "_postman_id": "f7e580f4-43d0-48c1-a280-aa7340944d15",
+    "name": "Multigenesys order service",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+    "_exporter_id": "36129048"
+  },
+  "item": [
+    {
+      "name": "addProduct",
+      "request": {
+        "method": "POST",
+        "header": [
+          {
+            "key": "Authorization",
+            "value": "Bearer eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJzd2FwbmlsamFndGFwQGdtYWlsLmNvbSIsImlhdCI6MTc3NDk0NDk3MiwiZXhwIjoxNzc0OTQ4NTcyfQ.4ZgDygXwkdG5HcWPRNjFsXySqxlV_jGEUAIfX2KdW0w",
+            "type": "text"
+          },
+          {
+            "key": "Content-Type",
+            "value": "application/json",
+            "type": "text"
+          }
+        ],
+        "body": {
+          "mode": "raw",
+          "raw": "{\r\n  \"name\": \"4K Monitor\",\r\n  \"description\": \"27 inch UHD display\",\r\n  \"price\": 32000,\r\n  \"stockQuantity\": 7,\r\n  \"imageUrl\": \"monitor.png\"\r\n}",
+          "options": {
+            "raw": {
+              "language": "json"
+            }
+          }
+        },
+        "url": {
+          "raw": "http://localhost:9096/api/product/addProduct",
+          "protocol": "http",
+          "host": [
+            "localhost"
+          ],
+          "port": "9096",
+          "path": [
+            "api",
+            "product",
+            "addProduct"
+          ]
+        }
+      },
+      "response": []
+    },
+    {
+      "name": "getAllProduct",
+      "request": {
+        "method": "GET",
+        "header": []
+      },
+      "response": []
+    },
+    {
+      "name": "getProductById",
+      "request": {
+        "method": "GET",
+        "header": []
+      },
+      "response": []
+    },
+    {
+      "name": "updateProduct",
+      "request": {
+        "method": "GET",
+        "header": []
+      },
+      "response": []
+    },
+    {
+      "name": "deleteProduct",
+      "request": {
+        "method": "GET",
+        "header": []
+      },
+      "response": []
+    },
+    {
+      "name": "addCart",
+      "request": {
+        "method": "GET",
+        "header": []
+      },
+      "response": []
+    },
+    {
+      "name": "getCart",
+      "request": {
+        "method": "GET",
+        "header": []
+      },
+      "response": []
+    },
+    {
+      "name": "updateCart",
+      "request": {
+        "method": "PUT",
+        "header": [
+          {
+            "key": "Authorization",
+            "value": "Bearer eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJrc2hpdGlqZGV2a2FyZUBnbWFpbC5jb20iLCJ1c2VySWQiOjYsImlhdCI6MTc3NTAyNjA0MSwiZXhwIjoxNzc1MDI5NjQxfQ.-YR6tcNOZrVAELROX3gaiL-KEsL0yMxW6eD2J4lylmA",
+            "type": "text"
+          },
+          {
+            "key": "Content-Type",
+            "value": "Application/json",
+            "type": "text"
+          }
+        ],
+        "url": {
+          "raw": "http://localhost:9096/api/cart/updateCartItem/4?quantity=4",
+          "protocol": "http",
+          "host": [
+            "localhost"
+          ],
+          "port": "9096",
+          "path": [
+            "api",
+            "cart",
+            "updateCartItem",
+            "4"
+          ],
+          "query": [
+            {
+              "key": "quantity",
+              "value": "4"
+            }
+          ]
+        }
+      },
+      "response": []
+    },
+    {
+      "name": "removeCart",
+      "request": {
+        "method": "DELETE",
+        "header": [
+          {
+            "key": "Authorization",
+            "value": "Bearer eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJrc2hpdGlqZGV2a2FyZUBnbWFpbC5jb20iLCJ1c2VySWQiOjYsImlhdCI6MTc3NTAyNjA0MSwiZXhwIjoxNzc1MDI5NjQxfQ.-YR6tcNOZrVAELROX3gaiL-KEsL0yMxW6eD2J4lylmA",
+            "type": "text"
+          },
+          {
+            "key": "Content-Transfer-Encoding",
+            "value": "Application/json",
+            "type": "text"
+          }
+        ],
+        "url": {
+          "raw": "http://localhost:9096/api/cart/removeCart/2",
+          "protocol": "http",
+          "host": [
+            "localhost"
+          ],
+          "port": "9096",
+          "path": [
+            "api",
+            "cart",
+            "removeCart",
+            "2"
+          ]
+        }
+      },
+      "response": []
+    },
+    {
+      "name": "createOrder",
+      "request": {
+        "method": "GET",
+        "header": []
+      },
+      "response": []
+    },
+    {
+      "name": "getOrderById",
+      "request": {
+        "method": "GET",
+        "header": []
+      },
+      "response": []
+    },
+    {
+      "name": "createPayment",
+      "request": {
+        "method": "GET",
+        "header": []
+      },
+      "response": []
+    },
+    {
+      "name": "successPayment",
+      "request": {
+        "method": "GET",
+        "header": []
+      },
+      "response": []
+    },
+    {
+      "name": "cancelPayment",
+      "request": {
+        "method": "GET",
+        "header": []
+      },
+      "response": []
+    }
+  ]
+}
