@@ -1,30 +1,34 @@
 package com.multigenesys.order_service.util;
 
-
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.security.Keys;
 
-import java.security.Key; 
+import java.security.Key;
 
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 
 @Component
 public class JwtUtil {
 
-    private final String SECRET = "mysecretkeymysecretkeymysecretkey123456";
-    private final Key SECRET_KEY = Keys.hmacShaKeyFor(SECRET.getBytes());
+    @Value("${jwt.secret}")
+    private String SECRET;
+
+
+    private Key getSigningKey() {
+        return Keys.hmacShaKeyFor(SECRET.getBytes());
+    }
 
     public Claims extractClaims(String token) {
         return Jwts.parserBuilder()
-                .setSigningKey(SECRET_KEY)
+                .setSigningKey(getSigningKey())
                 .build()
                 .parseClaimsJws(token)
                 .getBody();
     }
-    
-    public Long extractUserId(String token){
 
+    public Long extractUserId(String token) {
         Claims claims = extractClaims(token);
         return claims.get("userId", Long.class);
     }
@@ -32,15 +36,13 @@ public class JwtUtil {
     public String extractUsername(String token) {
         return extractClaims(token).getSubject();
     }
-    
-    
 
     public boolean isTokenValid(String token) {
         try {
             extractClaims(token);
             return true;
         } catch (Exception e) {
-            e.printStackTrace(); // debug
+            e.printStackTrace(); // kept as per your request
             return false;
         }
     }

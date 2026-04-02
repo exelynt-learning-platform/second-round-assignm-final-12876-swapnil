@@ -12,7 +12,7 @@ import com.multigenesys.order_service.service.PaymentService;
 @RequestMapping("/api/payment")
 public class PaymentController {
 
-	@Autowired
+    @Autowired
     private PaymentService paymentService;
 
     @PostMapping("/createPayment/{orderId}")
@@ -38,17 +38,19 @@ public class PaymentController {
         }
     }
 
-    @GetMapping("/successPayment")
-    public String success(@RequestParam String paymentId,
-                          @RequestParam String PayerID,
-                          @RequestParam Long orderId) {
+    @PostMapping("/successPayment")
+    public ResponseEntity<String> success(@RequestParam String paymentId,
+    									  @RequestParam(name = "PayerID") String payerId,
+                                          @RequestParam Long orderId) {
 
-        return paymentService.successPayment(paymentId, PayerID,orderId);
+        String response = paymentService.successPayment(paymentId, payerId, orderId);
+        return ResponseEntity.ok(response);
     }
 
-    @GetMapping("/cancelPayment")
-    public String cancel(@RequestParam Long orderId) {
+    @PostMapping("/cancelPayment")
+    public ResponseEntity<String> cancel(@RequestParam Long orderId) {
 
-        return paymentService.cancelPayment(orderId);
+        String response = paymentService.cancelPayment(orderId);
+        return ResponseEntity.ok(response);
     }
 }

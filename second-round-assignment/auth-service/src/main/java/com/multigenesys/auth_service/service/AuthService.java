@@ -36,17 +36,26 @@ public class AuthService {
 	        throw new RuntimeException("Email already exists");
 	    }
 
+	    String password = request.getPassword();
+
+	    if (password == null ||
+	        password.length() < 8 ||
+	        !password.matches(".*[A-Z].*") ||
+	        !password.matches(".*[0-9].*")) {
+
+	        throw new RuntimeException("Password must be at least 8 characters long and include one uppercase letter and one number");
+	    }
+
 	    User user = new User();
 	    user.setName(request.getName());
 	    user.setEmail(request.getEmail());
-	    user.setPassword(passwordEncoder.encode(request.getPassword()));
+	    user.setPassword(passwordEncoder.encode(password));
 	    user.setRole(Role.USER);
 	    user.setActive(true);
 	    user.setEmailVerified(false);
 
 	    userRepository.save(user);
 	}
-
 	
 
 	public AuthResponse login(LoginRequest request, String ipAddress, String userAgent) {

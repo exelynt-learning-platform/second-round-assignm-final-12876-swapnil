@@ -9,22 +9,35 @@ import com.multigenesys.order_service.dto.CartRequest;
 import com.multigenesys.order_service.dto.CartResponse;
 import com.multigenesys.order_service.entity.Cart;
 import com.multigenesys.order_service.entity.CartItem;
+import com.multigenesys.order_service.entity.Product;
 import com.multigenesys.order_service.repository.CartItemRepository;
 import com.multigenesys.order_service.repository.CartRepository;
+import com.multigenesys.order_service.repository.ProductRepository;
+
 @Service
 public class CartServiceImpl implements CartService {
 
     private final CartRepository cartRepository;
     private final CartItemRepository cartItemRepository;
+    private final ProductRepository productRepository;
 
     public CartServiceImpl(CartRepository cartRepository,
-                           CartItemRepository cartItemRepository) {
+                           CartItemRepository cartItemRepository,
+                           ProductRepository productRepository) {
         this.cartRepository = cartRepository;
         this.cartItemRepository = cartItemRepository;
+        this.productRepository = productRepository;
     }
 
     @Override
     public CartResponse addToCart(Long userId, CartRequest request) {
+
+        Product product = productRepository.findById(request.getProductId())
+                .orElseThrow(() -> new RuntimeException("Product not found with id: " + request.getProductId()));
+
+        if (request.getQuantity() == null || request.getQuantity() <= 0) {
+            throw new RuntimeException("Quantity must be greater than 0");
+        }
 
         Cart cart = cartRepository.findByUserId(userId)
                 .orElseGet(() -> {
@@ -34,7 +47,7 @@ public class CartServiceImpl implements CartService {
                 });
 
         CartItem item = new CartItem();
-        item.setProductId(request.getProductId());
+        item.setProductId(product.getId());
         item.setQuantity(request.getQuantity());
         item.setCart(cart);
 
@@ -51,6 +64,10 @@ public class CartServiceImpl implements CartService {
 
         if (!item.getCart().getUserId().equals(userId)) {
             throw new RuntimeException("Unauthorized");
+        }
+
+        if (quantity == null || quantity <= 0) {
+            throw new RuntimeException("Quantity must be greater than 0");
         }
 
         item.setQuantity(quantity);
@@ -81,14 +98,13 @@ public class CartServiceImpl implements CartService {
         return buildCartResponse(cart);
     }
 
-    // ✅ Manual mapping (NO streams, NO separate mapper class)
     private CartResponse buildCartResponse(Cart cart) {
 
         CartResponse response = new CartResponse();
         response.setCartId(cart.getId());
         response.setUserId(cart.getUserId());
 
-        List<CartItem> itemList = new ArrayList();
+        List<CartItem> itemList = new ArrayList<>();
 
         for (CartItem item : cart.getItems()) {
             CartItem newItem = new CartItem();

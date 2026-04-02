@@ -3,6 +3,7 @@ package com.multigenesys.auth_service.util;
 import java.security.Key;
 import java.util.Date;
 
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 
 import io.jsonwebtoken.Jwts;
@@ -11,24 +12,29 @@ import io.jsonwebtoken.security.Keys;
 @Component
 public class JwtUtil {
 
-	
-    private final String SECRET = "mysecretkeymysecretkeymysecretkey123456";
+    @Value("${jwt.secret}")
+    private String secret;
 
-    private final Key SECRET_KEY = Keys.hmacShaKeyFor(SECRET.getBytes());
+    @Value("${jwt.expiration}")
+    private long expiration;
 
-    public String generateToken(String email,Long userId) {
+    private Key getSigningKey() {
+        return Keys.hmacShaKeyFor(secret.getBytes());
+    }
+
+    public String generateToken(String email, Long userId) {
         return Jwts.builder()
                 .setSubject(email)
                 .claim("userId", userId)
                 .setIssuedAt(new Date())
-                .setExpiration(new Date(System.currentTimeMillis() + 1000 * 60 * 60))
-                .signWith(SECRET_KEY)
+                .setExpiration(new Date(System.currentTimeMillis() + expiration))
+                .signWith(getSigningKey())
                 .compact();
     }
 
     public String extractEmail(String token) {
         return Jwts.parserBuilder()
-                .setSigningKey(SECRET_KEY)
+                .setSigningKey(getSigningKey())
                 .build()
                 .parseClaimsJws(token)
                 .getBody()
