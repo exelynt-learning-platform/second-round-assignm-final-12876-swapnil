@@ -17,118 +17,118 @@ import com.multigenesys.order_service.entity.Product;
 import com.multigenesys.order_service.repository.CartRepository;
 import com.multigenesys.order_service.repository.OrderRepository;
 import com.multigenesys.order_service.repository.ProductRepository;
-import static com.multigenesys.order_service.mapper.OrderMapper.mapToOrderItem;
 
 @Service
 public class OrderServiceImpl implements OrderService {
 
-	@Autowired
-	private CartRepository cartRepository;
+    @Autowired
+    private CartRepository cartRepository;
 
-	@Autowired
-	private OrderRepository orderRepository;
+    @Autowired
+    private OrderRepository orderRepository;
 
-	@Autowired
-	private ProductRepository productRepository;
+    @Autowired
+    private ProductRepository productRepository;
 
-	@Override
-	@Transactional
-	public OrderResponse createOrder(Long userId, OrderRequest orderRequest) {
+    @Override
+    @Transactional
+    public OrderResponse createOrder(Long userId, OrderRequest orderRequest) {
 
-		Cart cart = cartRepository.findByUserId(userId).orElseThrow(() -> new RuntimeException("Cart not found"));
+        Cart cart = cartRepository.findByUserId(userId)
+                .orElseThrow(() -> new RuntimeException("Cart not found"));
 
-		if (cart.getItems() == null || cart.getItems().isEmpty()) {
-			throw new RuntimeException("Cart is empty");
-		}
+        // ✅ Proper validation for null or empty cart
+        if (cart.getItems() == null || cart.getItems().isEmpty()) {
+            throw new RuntimeException("Cart is empty");
+        }
 
-		Order order = new Order();
-		order.setUserId(userId);
+        Order order = new Order();
+        order.setUserId(userId);
 
-		List<OrderItem> orderItems = new ArrayList<>();
+        List<OrderItem> orderItems = new ArrayList<>();
+        double total = 0;
 
-		double total = 0;
+        for (CartItem cartItem : cart.getItems()) {
 
-		for (CartItem cartItem : cart.getItems()) {
+            Product product = productRepository.findById(cartItem.getProductId())
+                    .orElseThrow(() -> new RuntimeException("Product not found with id: " + cartItem.getProductId()));
 
-			Product product = productRepository.findById(cartItem.getProductId())
-					.orElseThrow(() -> new RuntimeException("Product not found with id: " + cartItem.getProductId()));
+            if (product.getStockQuantity() < cartItem.getQuantity()) {
+                throw new RuntimeException("Insufficient stock for product: " + product.getName());
+            }
 
-			if (product.getStockQuantity() < cartItem.getQuantity()) {
-				throw new RuntimeException("Insufficient stock for product: " + product.getName());
-			}
+            product.setStockQuantity(product.getStockQuantity() - cartItem.getQuantity());
+            productRepository.save(product);
 
-			product.setStockQuantity(product.getStockQuantity() - cartItem.getQuantity());
-			productRepository.save(product);
+            // ✅ Mapping directly without OrderMapper
+            OrderItem orderItem = new OrderItem();
+            orderItem.setProductId(cartItem.getProductId());
+            orderItem.setQuantity(cartItem.getQuantity());
+            orderItem.setPrice(product.getPrice());
+            orderItem.setOrder(order);
 
-			OrderItem orderItem = new OrderItem();
-			orderItem.setProductId(cartItem.getProductId());
-			orderItem.setQuantity(cartItem.getQuantity());
-			orderItem.setPrice(product.getPrice());
-			orderItem.setOrder(order);
+            total += cartItem.getQuantity() * product.getPrice();
+            orderItems.add(orderItem);
+        }
 
-			total += cartItem.getQuantity() * product.getPrice();
+        order.setItems(orderItems);
+        order.setTotalPrice(total);
+        order.setPaymentStatus("PENDING");
+        order.setShippingAddress(orderRequest.getShippingAddress());
+        order.setCity(orderRequest.getCity());
+        order.setState(orderRequest.getState());
+        order.setZipCode(orderRequest.getZipCode());
+        order.setCountry(orderRequest.getCountry());
 
-			orderItems.add(orderItem);
-		}
+        Order savedOrder = orderRepository.save(order);
 
-		order.setItems(orderItems);
-		order.setTotalPrice(total);
-		order.setPaymentStatus("PENDING");
-		order.setShippingAddress(orderRequest.getShippingAddress());
-		order.setCity(orderRequest.getCity());
-		order.setState(orderRequest.getState());
-		order.setZipCode(orderRequest.getZipCode());
-		order.setCountry(orderRequest.getCountry());
+        cart.getItems().clear();
+        cartRepository.save(cart);
 
-		Order savedOrder = orderRepository.save(order);
+        // ✅ Mapping directly in response
+        OrderResponse response = new OrderResponse();
+        response.setOrderId(savedOrder.getId());
+        response.setUserId(savedOrder.getUserId());
+        response.setTotalPrice(savedOrder.getTotalPrice());
+        response.setPaymentStatus(savedOrder.getPaymentStatus());
 
-		cart.getItems().clear();
-		cartRepository.save(cart);
+        List<OrderResponse.OrderItemResponse> itemList = new ArrayList<>();
+        for (OrderItem item : savedOrder.getItems()) {
+            OrderResponse.OrderItemResponse itemResponse = new OrderResponse.OrderItemResponse();
+            itemResponse.setItemId(item.getId());
+            itemResponse.setProductId(item.getProductId());
+            itemResponse.setQuantity(item.getQuantity());
+            itemResponse.setPrice(item.getPrice());
+            itemList.add(itemResponse);
+        }
+        response.setItems(itemList);
 
-		OrderResponse response = new OrderResponse();
-		response.setOrderId(savedOrder.getId());
-		response.setUserId(savedOrder.getUserId());
-		response.setTotalPrice(savedOrder.getTotalPrice());
-		response.setPaymentStatus(savedOrder.getPaymentStatus());
+        return response;
+    }
 
-		List<OrderItem> itemList = new ArrayList<>();
+    @Override
+    public OrderResponse getOrderById(Long orderId) {
 
-		for (OrderItem item : savedOrder.getItems()) {
-		    itemList.add(mapToOrderItem(item));
-		}
+        Order order = orderRepository.findById(orderId)
+                .orElseThrow(() -> new RuntimeException("Order not found"));
 
-		response.setItems(itemList);
+        OrderResponse response = new OrderResponse();
+        response.setOrderId(order.getId());
+        response.setUserId(order.getUserId());
+        response.setTotalPrice(order.getTotalPrice());
+        response.setPaymentStatus(order.getPaymentStatus());
 
-		return response;
-	}
+        List<OrderResponse.OrderItemResponse> itemList = new ArrayList<>();
+        for (OrderItem item : order.getItems()) {
+            OrderResponse.OrderItemResponse itemResponse = new OrderResponse.OrderItemResponse();
+            itemResponse.setItemId(item.getId());
+            itemResponse.setProductId(item.getProductId());
+            itemResponse.setQuantity(item.getQuantity());
+            itemResponse.setPrice(item.getPrice());
+            itemList.add(itemResponse);
+        }
+        response.setItems(itemList);
 
-	@Override
-	public OrderResponse getOrderById(Long orderId) {
-
-		Order order = orderRepository.findById(orderId).orElseThrow(() -> new RuntimeException("Order not found"));
-
-		OrderResponse response = new OrderResponse();
-
-		response.setOrderId(order.getId());
-		response.setUserId(order.getUserId());
-		response.setTotalPrice(order.getTotalPrice());
-		response.setPaymentStatus(order.getPaymentStatus());
-
-		List<OrderItem> itemList = new ArrayList<>();
-
-		for (OrderItem item : order.getItems()) {
-
-			OrderItem newItem = new OrderItem();
-			newItem.setId(item.getId());
-			newItem.setProductId(item.getProductId());
-			newItem.setQuantity(item.getQuantity());
-			newItem.setPrice(item.getPrice());
-
-			itemList.add(newItem);
-		}
-
-		response.setItems(itemList);
-
-		return response;
-	}
+        return response;
+    }
 }

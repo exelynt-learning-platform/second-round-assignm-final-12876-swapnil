@@ -1,7 +1,6 @@
 package com.multigenesys.order_service.service;
 
 import java.util.ArrayList;
-
 import java.util.List;
 
 import org.springframework.stereotype.Service;
@@ -14,7 +13,6 @@ import com.multigenesys.order_service.entity.Product;
 import com.multigenesys.order_service.repository.CartItemRepository;
 import com.multigenesys.order_service.repository.CartRepository;
 import com.multigenesys.order_service.repository.ProductRepository;
-import static com.multigenesys.order_service.mapper.CartMapper.mapToCartItem;
 
 @Service
 public class CartServiceImpl implements CartService {
@@ -33,7 +31,6 @@ public class CartServiceImpl implements CartService {
 
     @Override
     public CartResponse addToCart(Long userId, CartRequest request) {
-
         Product product = productRepository.findById(request.getProductId())
                 .orElseThrow(() -> new RuntimeException("Product not found with id: " + request.getProductId()));
 
@@ -60,7 +57,6 @@ public class CartServiceImpl implements CartService {
 
     @Override
     public CartResponse updateCartItem(Long userId, Long itemId, Integer quantity) {
-
         CartItem item = cartItemRepository.findById(itemId)
                 .orElseThrow(() -> new RuntimeException("Item not found"));
 
@@ -80,7 +76,6 @@ public class CartServiceImpl implements CartService {
 
     @Override
     public void removeCartItem(Long userId, Long itemId) {
-
         CartItem item = cartItemRepository.findById(itemId)
                 .orElseThrow(() -> new RuntimeException("Item not found"));
 
@@ -93,28 +88,28 @@ public class CartServiceImpl implements CartService {
 
     @Override
     public CartResponse getCart(Long userId) {
-
         Cart cart = cartRepository.findByUserId(userId)
                 .orElseThrow(() -> new RuntimeException("Cart not found"));
 
         return buildCartResponse(cart);
     }
 
+    
     private CartResponse buildCartResponse(Cart cart) {
-
         CartResponse response = new CartResponse();
         response.setCartId(cart.getId());
         response.setUserId(cart.getUserId());
 
-        List<CartItem> itemList = new ArrayList<>();
-
-        if (cart.getItems() != null) {   // ✅ NULL SAFE
-            for (CartItem item : cart.getItems()) {
-                itemList.add(mapToCartItem(item));
-            }
+        List<CartResponse.CartItemResponse> items = new ArrayList<>();
+        for (CartItem item : cart.getItems()) {
+            CartResponse.CartItemResponse itemResponse = new CartResponse.CartItemResponse();
+            itemResponse.setItemId(item.getId());
+            itemResponse.setProductId(item.getProductId());
+            itemResponse.setQuantity(item.getQuantity());
+            items.add(itemResponse);
         }
 
-        response.setItems(itemList);
+        response.setItems(items);
         return response;
     }
 }

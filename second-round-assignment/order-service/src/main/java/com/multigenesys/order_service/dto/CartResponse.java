@@ -2,24 +2,11 @@ package com.multigenesys.order_service.dto;
 
 import java.util.List;
 
-import com.multigenesys.order_service.entity.CartItem;
-
 public class CartResponse {
 
 	private Long cartId;
 	private Long userId;
-	private List<CartItem> items;
-
-	public CartResponse() {
-		super();
-	}
-
-	public CartResponse(Long cartId, Long userId, List<CartItem> items) {
-		super();
-		this.cartId = cartId;
-		this.userId = userId;
-		this.items = items;
-	}
+	private List<CartItemResponse> items;
 
 	public Long getCartId() {
 		return cartId;
@@ -37,17 +24,41 @@ public class CartResponse {
 		this.userId = userId;
 	}
 
-	public List<CartItem> getItems() {
+	public List<CartItemResponse> getItems() {
 		return items;
 	}
 
-	public void setItems(List<CartItem> items) {
+	public void setItems(List<CartItemResponse> items) {
 		this.items = items;
 	}
 
-	@Override
-	public String toString() {
-		return "CartResponse [cartId=" + cartId + ", userId=" + userId + ", items=" + items + "]";
-	}
+	public static class CartItemResponse {
+		private Long itemId;
+		private Long productId;
+		private Integer quantity;
 
+		public Long getItemId() {
+			return itemId;
+		}
+
+		public void setItemId(Long itemId) {
+			this.itemId = itemId;
+		}
+
+		public Long getProductId() {
+			return productId;
+		}
+
+		public void setProductId(Long productId) {
+			this.productId = productId;
+		}
+
+		public Integer getQuantity() {
+			return quantity;
+		}
+
+		public void setQuantity(Integer quantity) {
+			this.quantity = quantity;
+		}
+	}
 }
