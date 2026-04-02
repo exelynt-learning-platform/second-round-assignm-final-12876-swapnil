@@ -17,6 +17,7 @@ import com.multigenesys.order_service.entity.Product;
 import com.multigenesys.order_service.repository.CartRepository;
 import com.multigenesys.order_service.repository.OrderRepository;
 import com.multigenesys.order_service.repository.ProductRepository;
+import static com.multigenesys.order_service.mapper.OrderMapper.mapToOrderItem;
 
 @Service
 public class OrderServiceImpl implements OrderService {
@@ -93,14 +94,7 @@ public class OrderServiceImpl implements OrderService {
 		List<OrderItem> itemList = new ArrayList<>();
 
 		for (OrderItem item : savedOrder.getItems()) {
-
-			OrderItem newItem = new OrderItem();
-			newItem.setId(item.getId());
-			newItem.setProductId(item.getProductId());
-			newItem.setQuantity(item.getQuantity());
-			newItem.setPrice(item.getPrice());
-
-			itemList.add(newItem);
+		    itemList.add(mapToOrderItem(item));
 		}
 
 		response.setItems(itemList);

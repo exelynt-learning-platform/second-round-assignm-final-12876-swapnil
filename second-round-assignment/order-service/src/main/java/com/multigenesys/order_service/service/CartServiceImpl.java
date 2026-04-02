@@ -1,6 +1,7 @@
 package com.multigenesys.order_service.service;
 
 import java.util.ArrayList;
+
 import java.util.List;
 
 import org.springframework.stereotype.Service;
@@ -13,6 +14,7 @@ import com.multigenesys.order_service.entity.Product;
 import com.multigenesys.order_service.repository.CartItemRepository;
 import com.multigenesys.order_service.repository.CartRepository;
 import com.multigenesys.order_service.repository.ProductRepository;
+import static com.multigenesys.order_service.mapper.CartMapper.mapToCartItem;
 
 @Service
 public class CartServiceImpl implements CartService {
@@ -106,18 +108,13 @@ public class CartServiceImpl implements CartService {
 
         List<CartItem> itemList = new ArrayList<>();
 
-        for (CartItem item : cart.getItems()) {
-            CartItem newItem = new CartItem();
-
-            newItem.setId(item.getId());
-            newItem.setProductId(item.getProductId());
-            newItem.setQuantity(item.getQuantity());
-
-            itemList.add(newItem);
+        if (cart.getItems() != null) {   // ✅ NULL SAFE
+            for (CartItem item : cart.getItems()) {
+                itemList.add(mapToCartItem(item));
+            }
         }
 
         response.setItems(itemList);
-
         return response;
     }
 }

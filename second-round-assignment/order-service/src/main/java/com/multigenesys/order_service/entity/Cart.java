@@ -46,20 +46,18 @@ public class Cart {
         this.updatedAt = LocalDateTime.now();
     }
 
-	@OneToMany(mappedBy = "cart", cascade = CascadeType.ALL)
-	private List<CartItem> items = new ArrayList();
+    @OneToMany(mappedBy = "cart", cascade = CascadeType.ALL)
+    private List<CartItem> items;
 
-	public Cart() {
-		super();
-	}
+    public Cart() {
+        this.items = new ArrayList<>();  
+    }
 
-	public Cart(Long id, Long userId, List<CartItem> items) {
-		super();
-		this.id = id;
-		this.userId = userId;
-		this.items = items;
-	}
-
+    public Cart(Long id, Long userId, List<CartItem> items) {
+        this.id = id;
+        this.userId = userId;
+        this.items = (items != null) ? items : new ArrayList<>();  
+    }
 	public Long getId() {
 		return id;
 	}
