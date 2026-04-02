@@ -1,8 +1,10 @@
 package com.multigenesys.order_service.entity;
 
 import jakarta.persistence.*;
+
 import java.time.LocalDateTime;
 import java.util.List;
+
 import com.fasterxml.jackson.annotation.JsonManagedReference;
 
 @Entity
@@ -37,7 +39,7 @@ public class Order {
 
     @Column(name = "COUNTRY")
     private String country;
-
+    
     @Column(name = "CREATED_AT", updatable = false)
     private LocalDateTime createdAt;
 
@@ -53,7 +55,7 @@ public class Order {
     protected void onUpdate() {
         this.updatedAt = LocalDateTime.now();
     }
-
+    
     @OneToMany(mappedBy = "order", cascade = CascadeType.ALL)
     @JsonManagedReference
     private List<OrderItem> items;
@@ -61,46 +63,107 @@ public class Order {
     public Order() {
     }
 
-    public Order(Long id, Long userId, Double totalPrice, String paymentStatus, String shippingAddress, String city,
-                 String state, String zipCode, String country, List<OrderItem> items) {
-        this.id = id;
-        this.userId = userId;
-        this.totalPrice = totalPrice;
-        this.paymentStatus = paymentStatus;
-        this.shippingAddress = shippingAddress;
-        this.city = city;
-        this.state = state;
-        this.zipCode = zipCode;
-        this.country = country;
-        this.items = items;
-    }
+	public Order(Long id, Long userId, Double totalPrice, String paymentStatus, String shippingAddress, String city,
+			String state, String zipCode, String country, List<OrderItem> items) {
+		super();
+		this.id = id;
+		this.userId = userId;
+		this.totalPrice = totalPrice;
+		this.paymentStatus = paymentStatus;
+		this.shippingAddress = shippingAddress;
+		this.city = city;
+		this.state = state;
+		this.zipCode = zipCode;
+		this.country = country;
+		this.items = items;
+	}
 
-    // Getters and setters
-    public Long getId() { return id; }
-    public void setId(Long id) { this.id = id; }
-    public Long getUserId() { return userId; }
-    public void setUserId(Long userId) { this.userId = userId; }
-    public Double getTotalPrice() { return totalPrice; }
-    public void setTotalPrice(Double totalPrice) { this.totalPrice = totalPrice; }
-    public String getPaymentStatus() { return paymentStatus; }
-    public void setPaymentStatus(String paymentStatus) { this.paymentStatus = paymentStatus; }
-    public String getShippingAddress() { return shippingAddress; }
-    public void setShippingAddress(String shippingAddress) { this.shippingAddress = shippingAddress; }
-    public String getCity() { return city; }
-    public void setCity(String city) { this.city = city; }
-    public String getState() { return state; }
-    public void setState(String state) { this.state = state; }
-    public String getZipCode() { return zipCode; }
-    public void setZipCode(String zipCode) { this.zipCode = zipCode; }
-    public String getCountry() { return country; }
-    public void setCountry(String country) { this.country = country; }
-    public List<OrderItem> getItems() { return items; }
-    public void setItems(List<OrderItem> items) { this.items = items; }
+	public Long getId() {
+		return id;
+	}
 
-    @Override
-    public String toString() {
-        return "Order [id=" + id + ", userId=" + userId + ", totalPrice=" + totalPrice + ", paymentStatus="
-                + paymentStatus + ", shippingAddress=" + shippingAddress + ", city=" + city + ", state=" + state
-                + ", zipCode=" + zipCode + ", country=" + country + ", items=" + items + "]";
-    }
+	public void setId(Long id) {
+		this.id = id;
+	}
+
+	public Long getUserId() {
+		return userId;
+	}
+
+	public void setUserId(Long userId) {
+		this.userId = userId;
+	}
+
+	public Double getTotalPrice() {
+		return totalPrice;
+	}
+
+	public void setTotalPrice(Double totalPrice) {
+		this.totalPrice = totalPrice;
+	}
+
+	public String getPaymentStatus() {
+		return paymentStatus;
+	}
+
+	public void setPaymentStatus(String paymentStatus) {
+		this.paymentStatus = paymentStatus;
+	}
+
+	public String getShippingAddress() {
+		return shippingAddress;
+	}
+
+	public void setShippingAddress(String shippingAddress) {
+		this.shippingAddress = shippingAddress;
+	}
+
+	public String getCity() {
+		return city;
+	}
+
+	public void setCity(String city) {
+		this.city = city;
+	}
+
+	public String getState() {
+		return state;
+	}
+
+	public void setState(String state) {
+		this.state = state;
+	}
+
+	public String getZipCode() {
+		return zipCode;
+	}
+
+	public void setZipCode(String zipCode) {
+		this.zipCode = zipCode;
+	}
+
+	public String getCountry() {
+		return country;
+	}
+
+	public void setCountry(String country) {
+		this.country = country;
+	}
+
+	public List<OrderItem> getItems() {
+		return items;
+	}
+
+	public void setItems(List<OrderItem> items) {
+		this.items = items;
+	}
+
+	@Override
+	public String toString() {
+		return "Order [id=" + id + ", userId=" + userId + ", totalPrice=" + totalPrice + ", paymentStatus="
+				+ paymentStatus + ", shippingAddress=" + shippingAddress + ", city=" + city + ", state=" + state
+				+ ", zipCode=" + zipCode + ", country=" + country + ", items=" + items + "]";
+	}
+
+  
 }
