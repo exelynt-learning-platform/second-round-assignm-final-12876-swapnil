@@ -26,38 +26,47 @@ public class AuthController {
 	@PostMapping("/register")
 	public ResponseEntity<ApiResponse<Void>> register(@RequestBody RegisterRequest request) {
 
-	    try {
-	        authService.register(request);
+		try {
+			authService.register(request);
 
-	        return ResponseEntity.status(HttpStatus.CREATED)
-	                .body(new ApiResponse<>("User registered successfully", "SUCCESS", null));
+			return ResponseEntity.status(HttpStatus.CREATED)
+					.body(new ApiResponse<>("User registered successfully", "SUCCESS", null));
 
-	    } catch (Exception ex) {
+		} catch (RuntimeException ex) {
 
-	        return ResponseEntity.status(HttpStatus.BAD_REQUEST)
-	                .body(new ApiResponse<>(ex.getMessage(), "ERROR", null));
-	    }
+			return ResponseEntity.status(HttpStatus.BAD_REQUEST)
+					.body(new ApiResponse<>(ex.getMessage(), "ERROR", null));
+
+		} catch (Exception ex) {
+
+			return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+					.body(new ApiResponse<>("Something went wrong", "ERROR", null));
+		}
 	}
 
 	@PostMapping("/login")
 	public ResponseEntity<ApiResponse<AuthResponse>> login(@RequestBody LoginRequest request,
-	        HttpServletRequest httpRequest) {
+			HttpServletRequest httpRequest) {
 
-	    try {
+		try {
 
-	        String ipAddress = httpRequest.getRemoteAddr();
-	        String userAgent = httpRequest.getHeader("User-Agent");
+			String ipAddress = httpRequest.getRemoteAddr();
+			String userAgent = httpRequest.getHeader("User-Agent");
 
-	        AuthResponse token = authService.login(request, ipAddress, userAgent);
+			AuthResponse token = authService.login(request, ipAddress, userAgent);
 
-	        return ResponseEntity.ok(new ApiResponse<>("Login successful", "SUCCESS", token));
+			return ResponseEntity.ok(new ApiResponse<>("Login successful", "SUCCESS", token));
 
-	    } catch (Exception ex) {
+		} catch (RuntimeException ex) {
 
-	        return ResponseEntity.status(HttpStatus.UNAUTHORIZED)
-	                .body(new ApiResponse<>(ex.getMessage(), "ERROR", null));
-	    }
+			return ResponseEntity.status(HttpStatus.UNAUTHORIZED)
+					.body(new ApiResponse<>(ex.getMessage(), "ERROR", null));
+
+		} catch (Exception ex) {
+
+			return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+					.body(new ApiResponse<>("Something went wrong", "ERROR", null));
+		}
 	}
-	
 
 }
