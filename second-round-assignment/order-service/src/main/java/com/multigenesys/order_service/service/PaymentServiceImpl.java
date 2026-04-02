@@ -84,38 +84,44 @@ public class PaymentServiceImpl implements PaymentService {
 	@Override
 	public String successPayment(String paymentId, String payerId, Long orderId) {
 
-		boolean paymentExecuted = false;
+	    Order order = orderRepository.findById(orderId)
+	            .orElseThrow(() -> new RuntimeException("Order not found"));
 
-		try {
+	    try {
+	        Payment payment = new Payment();
+	        payment.setId(paymentId);
 
-			Payment payment = new Payment();
-			payment.setId(paymentId);
+	        PaymentExecution execution = new PaymentExecution();
+	        execution.setPayerId(payerId);
 
-			PaymentExecution execution = new PaymentExecution();
-			execution.setPayerId(payerId);
+	        Payment executedPayment = payment.execute(apiContext, execution);
 
-			payment.execute(apiContext, execution);
+	        // ✅ Only mark success AFTER successful execution
+	        if (executedPayment != null && "approved".equalsIgnoreCase(executedPayment.getState())) {
+	            order.setPaymentStatus("SUCCESS");
+	            orderRepository.save(order);
 
-			paymentExecuted = true;
+	            log.info("Payment successful for orderId: {}", orderId);
+	            return "Payment Success & Order Updated";
+	        } else {
+	            // ❗ Edge case: execution happened but not approved
+	            order.setPaymentStatus("FAILED");
+	            orderRepository.save(order);
 
-		} catch (Exception e) {
+	            log.warn("Payment not approved for orderId: {}", orderId);
+	            return "Payment not approved";
+	        }
 
-			log.error("PayPal execution failed for orderId: {}", orderId, e);
+	    } catch (Exception e) {
 
-		}
+	        // ❌ Proper failure handling
+	        log.error("PayPal execution failed for orderId: {}", orderId, e);
 
-		Order order = orderRepository.findById(orderId).orElseThrow(() -> new RuntimeException("Order not found"));
+	        order.setPaymentStatus("FAILED");
+	        orderRepository.save(order);
 
-		if (paymentExecuted) {
-			order.setPaymentStatus("SUCCESS");
-		} else {
-			// ✅ Better handling instead of crash
-			order.setPaymentStatus("FAILED");
-		}
-
-		orderRepository.save(order);
-
-		return paymentExecuted ? "Payment Success & Order Updated" : "Payment Failed but Order Updated";
+	        throw new RuntimeException("Payment execution failed. Please try again.");
+	    }
 	}
 
 	@Override
